@@ -7,7 +7,7 @@
 LUCI_NAME?=$(notdir ${CURDIR})
 LUCI_TYPE?=$(word 2,$(subst -, ,$(LUCI_NAME)))
 LUCI_BASENAME?=$(patsubst luci-$(LUCI_TYPE)-%,%,$(LUCI_NAME))
-LUCI_LANGUAGES:=$(filter-out templates,$(notdir $(wildcard ${CURDIR}/po/*)))
+LUCI_LANGUAGES:=$(sort $(filter-out templates,$(notdir $(wildcard ${CURDIR}/po/*))))
 LUCI_DEFAULTS:=$(notdir $(wildcard ${CURDIR}/root/etc/uci-defaults/*))
 LUCI_PKGARCH?=$(if $(realpath src/Makefile),,all)
 
@@ -34,10 +34,10 @@ LUCI_LANG.ru=Русский (Russian)
 LUCI_LANG.sk=Slovenčina (Slovak)
 LUCI_LANG.sv=Svenska (Swedish)
 LUCI_LANG.tr=Türkçe (Turkish)
-LUCI_LANG.uk=украї́нська (Ukrainian)
+LUCI_LANG.uk=Українська (Ukrainian)
 LUCI_LANG.vi=Tiếng Việt (Vietnamese)
 LUCI_LANG.zh-cn=简体中文 (Simplified Chinese)
-LUCI_LANG.zh-tw=繁体中文 (Traditional Chinese)
+LUCI_LANG.zh-tw=繁體中文 (Traditional Chinese)
 
 # Submenu titles
 LUCI_MENU.col=1. Collections
@@ -92,11 +92,17 @@ include $(INCLUDE_DIR)/package.mk
 
 define Package/$(PKG_NAME)
   SECTION:=luci
-  CATEGORY:=LuCI
+  CATEGORY:=$(if $(LUCI_CATEGORY),$(LUCI_CATEGORY),LuCI)
   SUBMENU:=$(if $(LUCI_MENU.$(LUCI_TYPE)),$(LUCI_MENU.$(LUCI_TYPE)),$(LUCI_MENU.app))
   TITLE:=$(if $(LUCI_TITLE),$(LUCI_TITLE),LuCI $(LUCI_NAME) $(LUCI_TYPE))
   DEPENDS:=$(LUCI_DEPENDS)
   $(if $(LUCI_PKGARCH),PKGARCH:=$(LUCI_PKGARCH))
+  $(if $(LUCI_CONFLICTS),CONFLICTS:=$(LUCI_CONFLICTS))
+  $(if $(LUCI_REPLACES),REPLACES:=$(LUCI_REPLACES))
+  $(if $(LUCI_PROVIDES),PROVIDES:=$(LUCI_PROVIDES))
+  $(if $(LUCI_SUGGESTS),SUGGESTS:=$(LUCI_SUGGESTS))
+  $(if $(LUCI_RECOMMENDS),RECOMMENDS:=$(LUCI_RECOMMENDS))
+  $(if $(LUCI_EXTRA_DEPENDS),EXTRA_DEPENDS:=$(LUCI_EXTRA_DEPENDS))
 endef
 
 ifneq ($(LUCI_DESCRIPTION),)
